@@ -12,7 +12,6 @@ public static class GamesListEndpoints
         var group = app.MapGroup("/games")
             .WithTags("Games");
 
-        // GET /games - Lista todos
         group.MapGet("/", async (AppDbContext db) =>
         {
             var games = await db.Games
@@ -32,7 +31,7 @@ public static class GamesListEndpoints
         })
         .WithName("GetAllGames");
 
-        // GET /games/{id} - Por ID
+       
         group.MapGet("/{id:int}", async (int id, AppDbContext db) =>
         {
             var game = await db.Games
