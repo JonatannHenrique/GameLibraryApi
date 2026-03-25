@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="GameLibraryApi.UnitTests/GameLibraryApi.UnitTests.csproj" Id="1a0b3e50-11a9-46df-b997-2598621dadf2" />
+  <Project Path="GameLibraryApi/GameLibraryApi.csproj" />
+</Solution>
