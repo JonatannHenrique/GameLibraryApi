@@ -1,0 +1,89 @@
+-- =============================================
+-- Script para recriar o banco GLibrary
+-- Baseado exatamente nos prints do MySQL Workbench
+-- =============================================
+
+CREATE DATABASE IF NOT EXISTS glibrary 
+    CHARACTER SET utf8mb4 
+    COLLATE utf8mb4_unicode_ci;
+
+USE glibrary;
+
+-- ============================
+-- Tabela: genres
+-- ============================
+CREATE TABLE IF NOT EXISTS genres (
+    Id     INT AUTO_INCREMENT PRIMARY KEY,
+    Name   VARCHAR(100) NOT NULL,
+    
+    UNIQUE KEY UK_Genre_Name (Name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================
+-- Tabela: games
+-- ============================
+CREATE TABLE IF NOT EXISTS games (
+    Id           INT AUTO_INCREMENT PRIMARY KEY,
+    Title        VARCHAR(200) NOT NULL,
+    Price        DECIMAL(10,2) NOT NULL,
+    ReleaseDate  DATE NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================
+-- Tabela de relacionamento: gamegenre
+-- ============================
+CREATE TABLE IF NOT EXISTS gamegenre (
+    GamesId   INT NOT NULL,
+    GenresId  INT NOT NULL,
+    
+    PRIMARY KEY (GamesId, GenresId),
+    
+    CONSTRAINT FK_GameGenre_Games 
+        FOREIGN KEY (GamesId) 
+        REFERENCES games(Id) 
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    
+    CONSTRAINT FK_GameGenre_Genres 
+        FOREIGN KEY (GenresId) 
+        REFERENCES genres(Id) 
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Índice para melhorar performance nas consultas
+CREATE INDEX IX_GameGenre_GenresId ON gamegenre(GenresId);
+
+-- =============================================
+-- Seed de Dados (igual ao que aparece nos prints)
+-- =============================================
+
+-- Gêneros
+INSERT IGNORE INTO genres (Id, Name) VALUES 
+    (1, 'RPG'),
+    (2, 'Ação'),
+    (3, 'Aventura'),
+    (4, 'Indie'),
+    (5, 'Terror'),
+    (6, 'Esporte');
+
+-- Jogos (exatamente como no seu print)
+INSERT IGNORE INTO games (Id, Title, Price, ReleaseDate) VALUES 
+    (1, 'Elden Ring', 249.90, '2022-02-25'),
+    (2, 'The Witcher 3: Wild Hunt', 89.90, '2015-05-19'),
+    (3, 'Hades', 79.90, '2020-09-17');
+
+-- Relacionamentos (gamegenre)
+INSERT IGNORE INTO gamegenre (GamesId, GenresId) VALUES 
+    (1, 1),  -- Elden Ring -> RPG
+    (1, 2),  -- Elden Ring -> Ação
+    (1, 5),  -- Elden Ring -> Terror
+    (2, 1),  -- Witcher -> RPG
+    (2, 3),  -- Witcher -> Aventura
+    (3, 1),  -- Hades -> RPG
+    (3, 4);  -- Hades -> Indie
+
+-- Verificação final
+SELECT 'Genres' AS TableName, COUNT(*) AS Total FROM genres
+UNION ALL
+SELECT 'Games', COUNT(*) FROM games
+UNION ALL
+SELECT 'GameGenre', COUNT(*) FROM gamegenre;
